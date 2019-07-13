@@ -25,6 +25,7 @@ const getTimeStamp = () => new Date().getTime() / 1000;
 const createHash = (index, previousHash, timestamp, data) =>
   CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
 
+const getBlocksHash = (block) => createHash(block.index, block.previousHash, block.timestamp, block.data);
 
 // 새로운 블록 만들기
 const createNewBlock = data => {
@@ -33,4 +34,19 @@ const createNewBlock = data => {
   const newTimeStamp = getTimeStamp();
   const newHash = createHash(newBlockIndex, previousBlock.hash, newTimeStamp, data);
   return new Block(newBlockIndex, newHash, previousBlock.hash, newTimeStamp, data);
+}
+
+// 블록체인 검증
+const isNewBlockValid = (candidateBlock, latestBlock) => {
+  if (latestBlock.index + 1 !== candidateBlock.index) {
+    console.log('The candidat block doesn`t have a valid index');
+    return false;
+  } else if (latestBlock.hash !== candidateBlock.previousHash) {
+    console.log('The previousHash of the candidate block is not the hash of the latest block');
+    return false;
+  } else if (getBlocksHash(candidateBlock) !== candidateBlock.hash) {
+    console.log('the hash of this block is invalid');
+    return false;
+  }
+  return true;
 }
