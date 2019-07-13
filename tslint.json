@@ -7,7 +7,8 @@
     "rules": {
         "no-console": false,
         "trailing-comma": true,
-        "ordered-imports": false
+        "ordered-imports": false,
+        "no-var-requires": false,
     },
     "rulesDirectory": []
 }

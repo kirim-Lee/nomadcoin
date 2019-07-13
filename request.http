@@ -7,3 +7,11 @@ Content-Type: application/json
 {
   "data": "my block"
 }
+
+###
+POST http://localhost:3300/peers
+Content-Type: application/json
+
+{
+  "peer": "ws://localhost:4000"
+}

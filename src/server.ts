@@ -1,7 +1,8 @@
-import express = require("express");
-import bodyParser = require("body-parser");
-import morgan = require("morgan");
+import express from "express";
+import bodyParser from "body-parser";
+import morgan from "morgan";
 import { getBlockchain, createNewBlock } from "./blockchain";
+import { startP2PServer, connectToPeers } from "./p2p";
 
 const PORT = process.env.HTTP_PORT || 3300;
 
@@ -19,4 +20,14 @@ app.post("/blocks", (req, res) => {
   res.send(newBlock);
 });
 
-app.listen(PORT, () => console.log(`Nomadcoin server running on ${PORT}`));
+app.post("/peers", (req, res) => {
+  const { peer } = req.body;
+  connectToPeers(peer);
+  res.send("success");
+});
+
+const server = app.listen(PORT, () =>
+  console.log(`Nomadcoin HTTP server running on ${PORT}`)
+);
+
+startP2PServer(server);

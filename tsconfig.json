@@ -4,10 +4,11 @@
     "module": "commonjs",
     "rootDir": "./",
     "allowJs": true,
-    "target": "es5"
+    "target": "es5",
+    "esModuleInterop": true
   },
   "include": [
     "./src/**/*"
   ],
-  "sourceMap": true
+  "sourceMap": true,
 }
