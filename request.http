@@ -1,0 +1,9 @@
+GET http://localhost:3300/blocks
+
+###
+POST http://localhost:3300/blocks
+Content-Type: application/json
+
+{
+  "data": "my block"
+}

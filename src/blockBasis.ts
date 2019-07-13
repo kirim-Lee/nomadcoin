@@ -1,11 +1,11 @@
-import CryptoJS from "crypto-js";
+import CryptoJS = require("crypto-js");
 
 class Block {
-  index: number;
-  hash: string;
-  previousHash: string;
-  timestamp: number;
-  data: string;
+  public index: number;
+  public hash: string;
+  public previousHash: string;
+  public timestamp: number;
+  public data: string;
   constructor(
     index: number,
     hash: string,

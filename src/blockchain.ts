@@ -21,13 +21,15 @@ export const createNewBlock = (data: string): Block => {
     newTimeStamp,
     data
   );
-  return new Block(
+  const newBlock = new Block(
     newBlockIndex,
     newHash,
     previousBlock.hash,
     newTimeStamp,
     data
   );
+  addBlockToChain(newBlock);
+  return newBlock;
 };
 
 // 체인 교체
