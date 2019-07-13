@@ -1,0 +1,9 @@
+{
+  "name": "nomadcoin",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "repository": "https://github.com/kirim-Lee/nomadcoin.git",
+  "author": "kirim-Lee <uthi1004@gmail.com>",
+  "license": "MIT",
+  "private": false
+}
