@@ -10,10 +10,16 @@
     "body-parser": "^1.19.0",
     "crypto-js": "^3.1.9-1",
     "express": "^4.17.1",
+    "global": "^4.4.0",
     "morgan": "^1.9.1",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "ts-node": "^8.3.0"
   },
   "devDependencies": {
+    "tslint": "^5.18.0",
     "typescript": "^3.5.3"
+  },
+  "scripts": {
+    "dev": "nodemon --watch src --delay 1 --exec \"ts-node\" src/server.ts"
   }
 }

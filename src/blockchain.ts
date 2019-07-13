@@ -3,7 +3,7 @@ import { isChainValid, isNewBlockValid } from "./blockValid";
 
 let blockchain: Block[] = [getGenesisBlock()];
 
-const getBlockchain = () => blockchain;
+export const getBlockchain = () => blockchain;
 const setBlockchain = (chain: Block[]): void => {
   blockchain = chain;
 };
@@ -11,7 +11,7 @@ const getLastBlock = (): Block => blockchain[blockchain.length - 1];
 const getTimeStamp = (): number => new Date().getTime() / 1000;
 
 // 새로운 블록 만들기
-const createNewBlock = (data: string): Block => {
+export const createNewBlock = (data: string): Block => {
   const previousBlock = getLastBlock();
   const newBlockIndex = previousBlock.index + 1;
   const newTimeStamp = getTimeStamp();
