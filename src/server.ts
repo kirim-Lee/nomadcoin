@@ -3,7 +3,7 @@ import bodyParser = require("body-parser");
 import morgan = require("morgan");
 import { getBlockchain, createNewBlock } from "./blockchain";
 
-const PORT = 3300;
+const PORT = process.env.HTTP_PORT || 3300;
 
 const app = express();
 app.use(bodyParser.json());
