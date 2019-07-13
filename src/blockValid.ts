@@ -1,7 +1,33 @@
-import { Block, getBlocksHash, genesisBlock } from "./blockchain";
+import Block, { getBlocksHash, getGenesisBlock } from "./blockBasis";
+
+// 블록체인구조 검증
+const isNewStructureValid = (block: Block): boolean => {
+  return (
+    typeof block.index === "number" &&
+    typeof block.hash === "string" &&
+    typeof block.previousHash === "string" &&
+    typeof block.timestamp === "number" &&
+    typeof block.data === "string" // TODO : data will be json
+  );
+};
+
+// 최초블록 검증
+const isGenesisValid = (block: Block): boolean => {
+  return JSON.stringify(block) === JSON.stringify(getGenesisBlock);
+};
+
+// 각블록검증
+const isEachChainValid = (chain: Block[]): boolean => {
+  for (let i = 1; i < chain.length; i++) {
+    if (!isNewBlockValid(chain[i], chain[i - 1])) {
+      return false;
+    }
+  }
+  return true;
+};
 
 // 블록체인 검증
-export const isNewBlockValid = (
+const isNewBlockValid = (
   candidateBlock: Block,
   latestBlock: Block
 ): boolean => {
@@ -23,34 +49,8 @@ export const isNewBlockValid = (
   return true;
 };
 
-// 블록체인구조 검증
-const isNewStructureValid = (block: Block): boolean => {
-  return (
-    typeof block.index === "number" &&
-    typeof block.hash === "string" &&
-    typeof block.previousHash === "string" &&
-    typeof block.timestamp === "number" &&
-    typeof block.data === "string" // TODO : data will be json
-  );
-};
-
-// 최초블록 검증
-const isGenesisValid = (block: Block): boolean => {
-  return JSON.stringify(block) === JSON.stringify(genesisBlock);
-};
-
-// 각블록검증
-const isEachChainValid = (chain: Block[]): boolean => {
-  for (let i = 1; i < chain.length; i++) {
-    if (!isNewBlockValid(chain[i], chain[i - 1])) {
-      return false;
-    }
-  }
-  return true;
-};
-
 // 체인 검증
-export const isChainValid = (candidateChain: Block[]): boolean => {
+const isChainValid = (candidateChain: Block[]): boolean => {
   if (!isGenesisValid(candidateChain[0])) {
     console.log(
       "the candidate chains`s genesis block is not the same as our genesis block"
@@ -62,3 +62,5 @@ export const isChainValid = (candidateChain: Block[]): boolean => {
   }
   return true;
 };
+
+export { isNewBlockValid, isChainValid };

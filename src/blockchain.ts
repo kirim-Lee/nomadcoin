@@ -1,56 +1,14 @@
-import CryptoJS from "crypto-js";
+import Block, { createHash, getGenesisBlock } from "./blockBasis";
 import { isChainValid, isNewBlockValid } from "./blockValid";
 
-export class Block {
-  index: number;
-  hash: string;
-  previousHash: string;
-  timestamp: number;
-  data: string;
-  constructor(
-    index: number,
-    hash: string,
-    previousHash: string,
-    timestamp: number,
-    data: string
-  ) {
-    this.index = index;
-    this.hash = hash;
-    this.previousHash = previousHash;
-    this.timestamp = timestamp;
-    this.data = data;
-  }
-}
-
-export const genesisBlock = new Block(
-  0,
-  "54757EFC4548C8AB98AD9F6169FFFD5283F5047E2A4B87A23AA90AF3EB793009",
-  null,
-  1563024230793,
-  "this is the genesis"
-);
-
-let blockchain: Block[] = [genesisBlock];
-
-const getLastBlock = (): Block => blockchain[blockchain.length - 1];
-const getTimeStamp = (): number => new Date().getTime() / 1000;
-const createHash = (
-  index: number,
-  previousHash: string,
-  timestamp: number,
-  data: string
-): string =>
-  CryptoJS.SHA256(
-    index + previousHash + timestamp + JSON.stringify(data)
-  ).toString();
-
-export const getBlocksHash = (block: Block): string =>
-  createHash(block.index, block.previousHash, block.timestamp, block.data);
+let blockchain: Block[] = [getGenesisBlock()];
 
 const getBlockchain = () => blockchain;
 const setBlockchain = (chain: Block[]): void => {
   blockchain = chain;
 };
+const getLastBlock = (): Block => blockchain[blockchain.length - 1];
+const getTimeStamp = (): number => new Date().getTime() / 1000;
 
 // 새로운 블록 만들기
 const createNewBlock = (data: string): Block => {
