@@ -14,8 +14,9 @@ const startP2PServer = (server: Server) => {
   console.log("Nomadcoin P2P Server running");
 };
 
-const initSocketConnection = (socket: WebSockets) => {
+const initSocketConnection = (socket: WebSockets): void => {
   sockets.push(socket);
+  hanldeSocketError(socket);
   socket.on("message", data => {
     console.log(data);
   });
@@ -23,7 +24,17 @@ const initSocketConnection = (socket: WebSockets) => {
     socket.send("welcome");
   }, 2000);
 };
-const connectToPeers = (newPeer: string) => {
+
+const hanldeSocketError = ws => {
+  const closeSockeConnection = ws => {
+    ws.close();
+    sockets.splice(sockets.indexOf(ws), 1);
+  };
+  ws.on("close", () => closeSockeConnection(ws));
+  ws.on("error", () => closeSockeConnection(ws));
+};
+
+const connectToPeers = (newPeer: string): void => {
   const ws = new WebSockets(newPeer);
   ws.on("open", () => {
     initSocketConnection(ws);
