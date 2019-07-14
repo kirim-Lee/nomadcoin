@@ -1,7 +1,7 @@
 import Block, { getBlocksHash, getGenesisBlock } from "./blockBasis";
 
 // 블록체인구조 검증
-const isNewStructureValid = (block: Block): boolean => {
+const isBlockStructureValid = (block: Block): boolean => {
   return (
     typeof block.index === "number" &&
     typeof block.hash === "string" &&
@@ -13,13 +13,13 @@ const isNewStructureValid = (block: Block): boolean => {
 
 // 최초블록 검증
 const isGenesisValid = (block: Block): boolean => {
-  return JSON.stringify(block) === JSON.stringify(getGenesisBlock);
+  return JSON.stringify(block) === JSON.stringify(getGenesisBlock());
 };
 
 // 각블록검증
 const isEachChainValid = (chain: Block[]): boolean => {
   for (let i = 1; i < chain.length; i++) {
-    if (!isNewBlockValid(chain[i], chain[i - 1])) {
+    if (!isBlockValid(chain[i], chain[i - 1])) {
       return false;
     }
   }
@@ -27,11 +27,8 @@ const isEachChainValid = (chain: Block[]): boolean => {
 };
 
 // 블록체인 검증
-const isNewBlockValid = (
-  candidateBlock: Block,
-  latestBlock: Block
-): boolean => {
-  if (!isNewStructureValid(candidateBlock)) {
+const isBlockValid = (candidateBlock: Block, latestBlock: Block): boolean => {
+  if (!isBlockStructureValid(candidateBlock)) {
     console.log("the candidate block structure is not valid");
     return false;
   } else if (latestBlock.index + 1 !== candidateBlock.index) {
@@ -63,4 +60,4 @@ const isChainValid = (candidateChain: Block[]): boolean => {
   return true;
 };
 
-export { isNewBlockValid, isChainValid };
+export { isBlockValid, isChainValid, isBlockStructureValid };

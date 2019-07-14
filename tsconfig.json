@@ -2,13 +2,27 @@
   "compilerOptions": {
     "outDir": "./built",
     "module": "commonjs",
+    "noImplicitAny": false,
     "rootDir": "./",
-    "allowJs": true,
     "target": "es5",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["/node_modules/*", "/src/types/*"]
+    },
+    "typeRoots": [
+      "./node_modules/@types", "./src/types"
+    ],
+    "declaration": true
+
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "src/types/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
   ],
   "sourceMap": true,
 }

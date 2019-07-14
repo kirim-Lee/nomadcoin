@@ -1,5 +1,5 @@
 import Block, { createHash, getGenesisBlock } from "./blockBasis";
-import { isChainValid, isNewBlockValid } from "./blockValid";
+import { isChainValid, isBlockValid } from "./blockValid";
 
 let blockchain: Block[] = [getGenesisBlock()];
 
@@ -7,12 +7,12 @@ export const getBlockchain = () => blockchain;
 const setBlockchain = (chain: Block[]): void => {
   blockchain = chain;
 };
-export const getLastestBlock = (): Block => blockchain[blockchain.length - 1];
+export const getNewestBlock = (): Block => blockchain[blockchain.length - 1];
 const getTimeStamp = (): number => new Date().getTime() / 1000;
 
 // 새로운 블록 만들기
 export const createNewBlock = (data: string): Block => {
-  const previousBlock = getLastestBlock();
+  const previousBlock = getNewestBlock();
   const newBlockIndex = previousBlock.index + 1;
   const newTimeStamp = getTimeStamp();
   const newHash = createHash(
@@ -33,7 +33,7 @@ export const createNewBlock = (data: string): Block => {
 };
 
 // 체인 교체
-const replaceChain = (newChain: Block[]): boolean => {
+export const replaceChain = (newChain: Block[]): boolean => {
   if (isChainValid(newChain) && newChain.length > getBlockchain().length) {
     setBlockchain(newChain);
     return true;
@@ -43,8 +43,8 @@ const replaceChain = (newChain: Block[]): boolean => {
 };
 
 // 블록추가
-const addBlockToChain = (candidateBlock: Block): boolean => {
-  if (isNewBlockValid(candidateBlock, getLastestBlock())) {
+export const addBlockToChain = (candidateBlock: Block): boolean => {
+  if (isBlockValid(candidateBlock, getNewestBlock())) {
     setBlockchain([...getBlockchain(), candidateBlock]);
     return true;
   } else {
