@@ -7,12 +7,12 @@ export const getBlockchain = () => blockchain;
 const setBlockchain = (chain: Block[]): void => {
   blockchain = chain;
 };
-const getLastBlock = (): Block => blockchain[blockchain.length - 1];
+export const getLastestBlock = (): Block => blockchain[blockchain.length - 1];
 const getTimeStamp = (): number => new Date().getTime() / 1000;
 
 // 새로운 블록 만들기
 export const createNewBlock = (data: string): Block => {
-  const previousBlock = getLastBlock();
+  const previousBlock = getLastestBlock();
   const newBlockIndex = previousBlock.index + 1;
   const newTimeStamp = getTimeStamp();
   const newHash = createHash(
@@ -44,7 +44,7 @@ const replaceChain = (newChain: Block[]): boolean => {
 
 // 블록추가
 const addBlockToChain = (candidateBlock: Block): boolean => {
-  if (isNewBlockValid(candidateBlock, getLastBlock())) {
+  if (isNewBlockValid(candidateBlock, getLastestBlock())) {
     setBlockchain([...getBlockchain(), candidateBlock]);
     return true;
   } else {
