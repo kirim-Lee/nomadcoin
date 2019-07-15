@@ -3,7 +3,8 @@ import {
   getNewestBlock,
   getBlockchain,
   replaceChain,
-  addBlockToChain
+  addBlockToChain,
+  createNewBlock
 } from "./blockchain";
 import { isBlockStructureValid } from "./blockValid";
 import Block from "./blockBasis";
@@ -15,9 +16,9 @@ const GET_ALL = "GET_ALL";
 const BLOCKCHAIN_RESPONSE = "BLOCKCHAIN_RESPONSE";
 
 // message creators
-const getLatest = (): IMessage => ({ type: GET_LATEST, data: null });
-const getAll = (): IMessage => ({ type: GET_ALL, data: null });
-const blockchainResponse = (data: any): IMessage => ({
+export const getLatest = (): IMessage => ({ type: GET_LATEST, data: null });
+export const getAll = (): IMessage => ({ type: GET_ALL, data: null });
+export const blockchainResponse = (data: any): IMessage => ({
   type: BLOCKCHAIN_RESPONSE,
   data
 });
@@ -36,6 +37,16 @@ export const sendMessage = (ws: WebSockets, message: IMessage): void =>
 
 const sendMessageToAll = (message: IMessage): void =>
   getSockets().forEach((ws): void => sendMessage(ws, message));
+
+export const broadcastNewBlock = () => sendMessageToAll(responseLatest());
+
+export const createNewBlockWithBroadCast = (data: string): Block => {
+  const newBlock = createNewBlock(data);
+  if (newBlock) {
+    broadcastNewBlock();
+  }
+  return newBlock;
+};
 
 export const handleSocketMessages = (ws: WebSockets, data: any) => {
   const message: IMessage | null = parseData(data);
@@ -73,11 +84,12 @@ const handleBlockchainResponse = (receiveBlocks: Block[]) => {
   if (latestBlockReceived.index > newestBlock.index) {
     // 한개 앞서 있다면 하나 추가
     if (newestBlock.hash === latestBlockReceived.previousHash) {
-      addBlockToChain(latestBlockReceived);
+      if (addBlockToChain(latestBlockReceived)) {
+        broadcastNewBlock();
+      }
     }
     // 교체를 하기에 앞서 재귀 (모든 블록을 요청)
     else if (receiveBlocks.length === 1) {
-      console.log("receive length 1");
       sendMessageToAll(getAll());
     }
     // 둘 이상 앞서 있다면 교체
@@ -89,5 +101,3 @@ const handleBlockchainResponse = (receiveBlocks: Block[]) => {
 
 const responseLatest = (): IMessage => blockchainResponse([getNewestBlock()]);
 const responseAll = (): IMessage => blockchainResponse(getBlockchain());
-
-export { getLatest, getAll, blockchainResponse };
