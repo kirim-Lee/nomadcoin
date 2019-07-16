@@ -56,10 +56,10 @@ const getTxId = (tx: Transaction): string => {
   return CryptoJS.SHA256(txInContent + txOutContent).toString();
 };
 
-const findUTxOut = (txOutId: string, txOutIndex: number, uTxOuts: UTxOut[]): UTxOut | undefined =>
-  uTxOuts.find(uTxOut => uTxOut.txOutId === txOutId && uTxOut.txOutIndex === txOutIndex);
+const findUTxOut = (txOutId: string, txOutIndex: number, uTxOutList: UTxOut[]): UTxOut | undefined =>
+  uTxOutList.find(uTxOut => uTxOut.txOutId === txOutId && uTxOut.txOutIndex === txOutIndex);
 
-const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string, uTxOut: UTxOut): string[] => {
+const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string): string[] => {
   const txIn: TxIn = tx.txIns[txInIndex];
   const dataToSign = tx.id;
   const referencedUTxOut = findUTxOut(txIn.txOutId, txIn.txOutIndex, uTxOuts);
@@ -69,4 +69,30 @@ const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string, uTxOut
   const key = ec.keyFromPrivate(privateKey, 'hex');
   const signature = toHexString(key.sign(dataToSign).toDER());
   return signature;
+};
+
+declare global {
+  interface Array<T> {
+    flat(this: T[]): T;
+  }
+}
+
+Array.prototype.flat = function<T>(this: T[][]): T[] {
+  return this.reduce((a, b) => a.concat(b), []);
+};
+
+const updateUTxOuts = (newTxs: Transaction[], uTxOutList: UTxOut[]) => {
+  const newUTxOuts: UTxOut[] = newTxs
+    .map(tx => tx.txOuts.map((txOut, index) => new UTxOut(tx.id, index, txOut.address, txOut.amount)))
+    .flat();
+  // .reduce((a, b) => a.concat(b), []);
+
+  const spentTxOuts = newTxs
+    .map(tx => tx.txIns)
+    .flat()
+    .map(txIn => new UTxOut(txIn.txOutId, txIn.txOutIndex, '', 0));
+
+  const resultingUTxOuts = uTxOutList
+    .filter(uTxOut => !findUTxOut(uTxOut.txOutId, uTxOut.txOutIndex, spentTxOuts))
+    .concat(newUTxOuts);
 };
