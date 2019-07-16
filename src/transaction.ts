@@ -1,4 +1,8 @@
 import CryptoJS from 'crypto-js';
+import { ec as EC } from 'elliptic';
+import { toHexString } from './utils';
+
+const ec = new EC('secp256k1');
 
 class TxOut {
   public address: string;
@@ -10,16 +14,16 @@ class TxOut {
 }
 
 class TxIn {
-  public uTxOutId: string;
-  public uTxOutIndex: number;
-  public signature: string;
-  // uTxOutId
-  // uTxOutIndex
+  public txOutId: string;
+  public txOutIndex: number;
+  public signature: string[];
+  // txOutId
+  // txOutIndex
   // signature
 }
 
 class Transaction {
-  public ID: string;
+  public id: string;
   public txIns: TxIn[];
   public txOuts: TxOut[];
   // ID
@@ -27,29 +31,42 @@ class Transaction {
   // txOuts[]
 }
 
-class uTxOut {
-  public uTxOutId: string;
-  public uTxOutIndex: number;
+class UTxOut {
+  public txOutId: string;
+  public txOutIndex: number;
   public address: string;
   public amount: number;
-  constructor(uTxOutId: string, uTxOutIndex: number, address: string, amount: number) {
-    this.uTxOutId = uTxOutId;
-    this.uTxOutIndex = uTxOutIndex;
+  constructor(txOutId: string, txOutIndex: number, address: string, amount: number) {
+    this.txOutId = txOutId;
+    this.txOutIndex = txOutIndex;
     this.address = address;
     this.amount = amount;
   }
 }
 
-const uTxOuts: uTxOut[] = [];
+const uTxOuts: UTxOut[] = [];
 
-const getTxId = (tx: Transaction) => {
-  const txInContent: string = tx.txIns
-    .map((txIn: TxIn) => txIn.uTxOutId + txIn.uTxOutIndex)
-    .reduce((a, b) => a + b, '');
+const getTxId = (tx: Transaction): string => {
+  const txInContent: string = tx.txIns.map((txIn: TxIn) => txIn.txOutId + txIn.txOutIndex).reduce((a, b) => a + b, '');
 
   const txOutContent: string = tx.txOuts
     .map((txOut: TxOut) => txOut.address + txOut.amount)
     .reduce((a, b) => a + b, '');
 
   return CryptoJS.SHA256(txInContent + txOutContent).toString();
+};
+
+const findUTxOut = (txOutId: string, txOutIndex: number, uTxOuts: UTxOut[]): UTxOut | undefined =>
+  uTxOuts.find(uTxOut => uTxOut.txOutId === txOutId && uTxOut.txOutIndex === txOutIndex);
+
+const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string, uTxOut: UTxOut): string[] => {
+  const txIn: TxIn = tx.txIns[txInIndex];
+  const dataToSign = tx.id;
+  const referencedUTxOut = findUTxOut(txIn.txOutId, txIn.txOutIndex, uTxOuts);
+  if (referencedUTxOut === undefined) {
+    return;
+  }
+  const key = ec.keyFromPrivate(privateKey, 'hex');
+  const signature = toHexString(key.sign(dataToSign).toDER());
+  return signature;
 };
