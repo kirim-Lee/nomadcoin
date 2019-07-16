@@ -15,13 +15,26 @@ export const createNewBlock = (data: string): Block => {
 
 // 체인 교체
 export const replaceChain = (newChain: Block[]): boolean => {
-  if (isChainValid(newChain) && newChain.length > getBlockchain().length) {
+  const newDifficulty = sumDifficulty(newChain);
+  const previousDifficulty = sumDifficulty(getBlockchain());
+  if (
+    isChainValid(newChain) &&
+    (newDifficulty > previousDifficulty ||
+      (newDifficulty === previousDifficulty && newChain.length > getBlockchain().length))
+  ) {
     setBlockchain(newChain);
     return true;
   } else {
     return false;
   }
 };
+
+// 난이도 체크
+const sumDifficulty = (chain: Block[]): number =>
+  chain
+    .map(block => block.difficulty)
+    .map(difficulty => Math.pow(difficulty, 2))
+    .reduce((sum, pow) => sum + pow, 0);
 
 // 블록추가
 export const addBlockToChain = (candidateBlock: Block): boolean => {
