@@ -1,19 +1,13 @@
-import WebSockets from "ws";
-import {
-  getNewestBlock,
-  getBlockchain,
-  replaceChain,
-  addBlockToChain,
-  createNewBlock
-} from "./blockchain";
-import { isBlockStructureValid } from "./blockValid";
-import Block from "./blockBasis";
-import { getSockets } from "./p2pBasis";
+import WebSockets from 'ws';
+import { replaceChain, addBlockToChain, createNewBlock } from './blockchain';
+import { isBlockStructureValid } from './blockValid';
+import Block, { getNewestBlock, getBlockchain } from './blockBasis';
+import { getSockets } from './p2pBasis';
 
 // message types
-const GET_LATEST = "GET_LATEST";
-const GET_ALL = "GET_ALL";
-const BLOCKCHAIN_RESPONSE = "BLOCKCHAIN_RESPONSE";
+const GET_LATEST = 'GET_LATEST';
+const GET_ALL = 'GET_ALL';
+const BLOCKCHAIN_RESPONSE = 'BLOCKCHAIN_RESPONSE';
 
 // message creators
 export const getLatest = (): IMessage => ({ type: GET_LATEST, data: null });
@@ -32,11 +26,9 @@ const parseData = (data: any): any => {
   }
 };
 
-export const sendMessage = (ws: WebSockets, message: IMessage): void =>
-  ws.send(JSON.stringify(message));
+export const sendMessage = (ws: WebSockets, message: IMessage): void => ws.send(JSON.stringify(message));
 
-const sendMessageToAll = (message: IMessage): void =>
-  getSockets().forEach((ws): void => sendMessage(ws, message));
+const sendMessageToAll = (message: IMessage): void => getSockets().forEach((ws): void => sendMessage(ws, message));
 
 export const broadcastNewBlock = () => sendMessageToAll(responseLatest());
 
@@ -72,12 +64,12 @@ export const handleSocketMessages = (ws: WebSockets, data: any) => {
 
 const handleBlockchainResponse = (receiveBlocks: Block[]) => {
   if (receiveBlocks.length === 0) {
-    console.log("received blocks have a length of 0");
+    console.log('received blocks have a length of 0');
     return;
   }
   const latestBlockReceived = receiveBlocks[receiveBlocks.length - 1];
   if (!isBlockStructureValid(latestBlockReceived)) {
-    console.log("the block structure of the block received is not valid");
+    console.log('the block structure of the block received is not valid');
     return;
   }
   const newestBlock = getNewestBlock();
