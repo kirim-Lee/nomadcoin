@@ -5,6 +5,16 @@ import { getBlockchain } from './blockBasis';
 import { startP2PServer, connectToPeers } from './p2p';
 import { createNewBlockWithBroadCast } from './p2pMessage';
 
+declare global {
+  interface Array<T> {
+    flat(this: T[]): T;
+  }
+}
+
+Array.prototype.flat = function<T>(this: T[][]): T[] {
+  return this.reduce((a, b) => a.concat(b), []);
+};
+
 const PORT = process.env.HTTP_PORT || 3300;
 
 const app = express();
