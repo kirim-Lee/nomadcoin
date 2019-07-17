@@ -1,4 +1,6 @@
-import { TxIn, TxOut, Transaction } from './txBasis';
+import { TxIn, TxOut, Transaction, UTxOut, getUTxOut } from './txBasis';
+import { getTxId, findUTxOut } from './txFind';
+import ec from './elliptic';
 
 // TxIn 구조검사
 const isTxInStructurValid = (txIn: TxIn): boolean => {
@@ -19,7 +21,7 @@ const isTxInStructurValid = (txIn: TxIn): boolean => {
 };
 
 // TxOut 구조검사
-const isTxOutStructurValid = (txOut: TxOut) => {
+const isTxOutStructurValid = (txOut: TxOut): boolean => {
   if (txOut === null) {
     console.log('txOut is null');
     return false;
@@ -65,4 +67,46 @@ const isTxStructureValid = (tx: Transaction): boolean => {
     return false;
   }
   return true;
+};
+
+const validateTxIn = (txIn: TxIn, tx: Transaction, uTxOutList: UTxOut[]): boolean => {
+  // txIn과 uTxOut에 같은 [txOutId, txOutIndex] 있는지 체크
+  const wantedTxOut: UTxOut | undefined = findUTxOut(txIn.txOutId, txIn.txOutIndex, uTxOutList);
+  if (wantedTxOut === undefined) {
+    return false;
+  }
+
+  // tx id, signature 유효한지 체크
+  const address = wantedTxOut.address;
+  const key = ec.keyFromPublic(address, 'hex');
+  return <boolean>key.verify(tx.id, txIn.signature);
+};
+
+const validateTx = (tx: Transaction): boolean => {
+  if (getTxId(tx) !== tx.id) {
+    return false;
+  }
+
+  const hasValidTxs = tx.txIns.map(txIn => validateTxIn(txIn, tx, getUTxOut())).some((boolean: boolean) => !boolean);
+
+  if (!hasValidTxs) {
+    return;
+  }
+
+  const amountInTxIns = tx.txIns
+    .map(
+      (txIn: TxIn): number => {
+        const txOut = findUTxOut(txIn.txOutId, txIn.txOutIndex, getUTxOut());
+        return txOut ? txOut.amount : 0;
+      }
+    )
+    .reduce((a: number, b: number): number => a + (b || 0), 0);
+
+  const amountInTxOuts = tx.txOuts.map(txOut => txOut.amount).reduce((a: number, b: number): number => a + (b || 0), 0);
+
+  if (amountInTxIns !== amountInTxOuts) {
+    return false;
+  } else {
+    return true;
+  }
 };
