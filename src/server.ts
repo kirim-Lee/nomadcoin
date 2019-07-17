@@ -8,11 +8,16 @@ import { createNewBlockWithBroadCast } from './p2pMessage';
 declare global {
   interface Array<T> {
     flat(this: T[]): T;
+    sum(this: T[]): T;
   }
 }
 
 Array.prototype.flat = function<T>(this: T[][]): T[] {
   return this.reduce((a, b) => a.concat(b), []);
+};
+
+Array.prototype.sum = function<T>(this: T[]): any {
+  return this.reduce((a: any, b: any): any => a + b);
 };
 
 const PORT = process.env.HTTP_PORT || 3300;
