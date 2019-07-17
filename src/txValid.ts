@@ -1,73 +1,39 @@
 import { TxIn, TxOut, Transaction, UTxOut, getUTxOut } from './txBasis';
 import { getTxId, findUTxOut } from './txFind';
 import ec from './elliptic';
+import Test from './test';
 
 // TxIn 구조검사
-const isTxInStructurValid = (txIn: TxIn): boolean => {
-  if (txIn === null) {
-    console.log('txIn is null');
-    return false;
-  } else if (typeof txIn.signature === 'string') {
-    console.log('typeof txIn signature invalid');
-    return false;
-  } else if (typeof txIn.txOutId !== 'string') {
-    console.log('typeof txIn txOutId invalid');
-    return false;
-  } else if (typeof txIn.txOutIndex !== 'number') {
-    console.log('typeof txIn txOutIndex invalid');
-    return false;
-  }
-  return true;
-};
+const isTxInStructurValid = (txIn: TxIn): boolean =>
+  Test([
+    [txIn === null, 'txIn is null'],
+    [typeof txIn.signature === 'string', 'typeof txIn signature invalid'],
+    [typeof txIn.txOutId !== 'string', 'typeof txIn txOutId invalid'],
+    [typeof txIn.txOutIndex !== 'number', 'typeof txIn txOutIndex invalid']
+  ]);
 
 // TxOut 구조검사
-const isTxOutStructurValid = (txOut: TxOut): boolean => {
-  if (txOut === null) {
-    console.log('txOut is null');
-    return false;
-  } else if (typeof txOut.address !== 'string') {
-    console.log('typeof txOut address invalid');
-    return false;
-  } else if (isAddressValid(txOut.address)) {
-    console.log('address is invalid');
-    return false;
-  } else if (typeof txOut.amount !== 'number') {
-    console.log('typeof txOut amount invalid');
-    return false;
-  }
-  return true;
-};
+const isTxOutStructurValid = (txOut: TxOut): boolean =>
+  Test([
+    [txOut === null, 'txOut is null'],
+    [typeof txOut.address !== 'string', 'typeof txOut address invalid'],
+    [isAddressValid(txOut.address), 'address is invalid'],
+    [typeof txOut.amount !== 'number', 'typeof txOut amount invalid']
+  ]);
 
-// 주소 검사
-const isAddressValid = (address: string): boolean => {
-  if (address.length <= 130) {
-    return false;
-  } else if (address.match('^[a-fA-F0-9]+$') === null) {
-    return false;
-  } else if (!address.startsWith('04')) {
-    return false;
-  }
-  return true;
-};
+// 주소 valid
+const isAddressValid = (address: string): boolean =>
+  Test([[address.length <= 130], [address.match('^[a-fA-F0-9]+$') === null], [!address.startsWith('04')]]);
 
-const isTxStructureValid = (tx: Transaction): boolean => {
-  if (typeof tx.id !== 'string') {
-    console.log('Tx ID is not valid');
-    return false;
-  } else if (!(tx.txIns instanceof Array)) {
-    console.log('txIns are not an array');
-    return false;
-  } else if (tx.txIns.map(isTxInStructurValid).some(valid => !valid)) {
-    console.log('the structure of on of the txIn is not valid');
-  } else if (!(tx.txOuts instanceof Array)) {
-    console.log('txOuts are not an array');
-    return false;
-  } else if (tx.txOuts.map(isTxOutStructurValid).some(valid => !valid)) {
-    console.log('the structure of on of the txOut is not valid');
-    return false;
-  }
-  return true;
-};
+// tx 구조검사
+const isTxStructureValid = (tx: Transaction): boolean =>
+  Test([
+    [typeof tx.id !== 'string', 'Tx ID is not valid'],
+    [!(tx.txIns instanceof Array), 'txIns are not an array'],
+    [tx.txIns.map(isTxInStructurValid).some(valid => !valid), 'the structure of on of the txIn is not valid'],
+    [!(tx.txOuts instanceof Array), 'txOuts are not an array'],
+    [tx.txOuts.map(isTxOutStructurValid).some(valid => !valid), 'the structure of on of the txOut is not valid']
+  ]);
 
 const validateTxIn = (txIn: TxIn, tx: Transaction, uTxOutList: UTxOut[]): boolean => {
   // txIn과 uTxOut에 같은 [txOutId, txOutIndex] 있는지 체크
@@ -82,6 +48,7 @@ const validateTxIn = (txIn: TxIn, tx: Transaction, uTxOutList: UTxOut[]): boolea
   return <boolean>key.verify(tx.id, txIn.signature);
 };
 
+// tx valid
 const validateTx = (tx: Transaction): boolean => {
   if (getTxId(tx) !== tx.id) {
     return false;
