@@ -13,18 +13,22 @@ class TxIn {
   public txOutId: string;
   public txOutIndex: number;
   public signature: string;
-  // txOutId
-  // txOutIndex
-  // signature
+  constructor(txOutId: string, txOutIndex: number, signature: string) {
+    this.txOutId = txOutId;
+    this.txOutIndex = txOutIndex;
+    this.signature = signature;
+  }
 }
 
 class Transaction {
   public id: string;
   public txIns: TxIn[];
   public txOuts: TxOut[];
-  // ID
-  // txIns[]
-  // txOuts[]
+  constructor(id: string, txIns: TxIn[], txOuts: TxOut[]) {
+    this.id = id;
+    this.txIns = txIns;
+    this.txOuts = txOuts;
+  }
 }
 
 class UTxOut {

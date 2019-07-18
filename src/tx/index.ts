@@ -1,8 +1,9 @@
-import { Transaction, TxIn, UTxOut, getUTxOut } from './txBasis';
-import { findUTxOut } from './txFind';
+import { Transaction, TxIn, UTxOut, getUTxOut, TxOut } from './txBasis';
+import { findUTxOut, getTxId } from './txFind';
 import { getSignature, getPublicFromKey } from '../utils/ellipticKey';
+import { findAmountInUTxOuts } from '../wallet/walletBalance';
 
-const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string): string | null => {
+export const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string): string | null => {
   const txIn: TxIn = tx.txIns[txInIndex];
   const referencedUTxOut: UTxOut = findUTxOut(txIn.txOutId, txIn.txOutIndex, getUTxOut());
   if (referencedUTxOut === undefined) {
@@ -28,4 +29,39 @@ const updateUTxOuts = (newTxs: Transaction[], uTxOutList: UTxOut[]) => {
   const resultingUTxOuts = uTxOutList
     .filter(uTxOut => !findUTxOut(uTxOut.txOutId, uTxOut.txOutIndex, spentTxOuts))
     .concat(newUTxOuts);
+};
+
+const createTx = (receiverAddress: string, amount: number, privateKey: string) => {
+  const myAddress: string = getPublicFromKey(privateKey);
+  const myUTxOuts: UTxOut[] = getUTxOut().filter(uTxOut => uTxOut.address === myAddress);
+
+  // 거래될 uTxOut, 그 uTxOut에서 필요한 amount 차감한 나머지를 구함
+  const { includedUTxOuts, leftOverAmount } = findAmountInUTxOuts(amount, myUTxOuts);
+  const toUnSignedTxIn = (uTxOut: UTxOut) => {
+    const { txOutId, txOutIndex } = uTxOut;
+    return new TxIn(txOutId, txOutIndex, getSignature(privateKey, myAddress));
+  };
+
+  const unSignedTxIns = includedUTxOuts.map(toUnSignedTxIn);
+  const txOuts = createTxOuts(receiverAddress, myAddress, amount, leftOverAmount);
+  const txId = getTxId({ id: '', txIns: unSignedTxIns, txOuts });
+
+  const tx = new Transaction(txId, unSignedTxIns, txOuts);
+
+  tx.txIns = tx.txIns.map((txIn, index) => {
+    txIn.signature = signTxIn(tx, index, privateKey);
+    return txIn;
+  });
+
+  return tx;
+};
+
+const createTxOuts = (receiverAddress: string, myAddress: string, amount: number, leftOverAmount: number): any[] => {
+  const receiverTxOut = new TxOut(receiverAddress, amount);
+  if (leftOverAmount === 0) {
+    return [receiverTxOut];
+  } else {
+    const leftOverTxOut = new TxOut(myAddress, leftOverAmount);
+    return [receiverTxOut, leftOverAmount];
+  }
 };
