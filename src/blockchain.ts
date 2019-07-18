@@ -1,7 +1,7 @@
 import Block, { getNewestBlock, getBlockchain, setBlockchain } from './blockBasis';
 import { isChainValid, isBlockValid } from './blockValid';
 import findBlock from './blockFind';
-import { getTimeStamp } from './utils';
+import { getTimeStamp } from './common';
 
 // 새로운 블록 만들기
 export const createNewBlock = (data: string): Block => {

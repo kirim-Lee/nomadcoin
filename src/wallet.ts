@@ -2,6 +2,7 @@ import ec from './elliptic';
 import path from 'path';
 import fs from 'fs';
 import { UTxOut } from './txBasis';
+import { getPublicFromKey } from './ellipticKey';
 
 const privateKeyLocation = path.join(__dirname, 'privateKey');
 
@@ -17,13 +18,9 @@ export const initWallet = (): void =>
 
 const getPrivateFromWallet = (): string => fs.readFileSync(privateKeyLocation, 'utf-8').toString();
 
-const getPublicFromWallet = () => {
+const getPublicFromWallet = (): string => {
   const privateKey = getPrivateFromWallet();
-  const key = ec.keyFromPrivate(privateKey, 'hex');
-  return key
-    .getPublic()
-    .encode('hex', false)
-    .toString();
+  return getPublicFromKey(privateKey);
 };
 
 const getBalance = (address: string, uTxOuts: UTxOut[]) => {

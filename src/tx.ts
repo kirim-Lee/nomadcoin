@@ -1,25 +1,24 @@
-import ec from './elliptic';
-import { toHexString } from './utils';
 import { Transaction, TxIn, UTxOut, getUTxOut } from './txBasis';
 import { findUTxOut } from './txFind';
+import { getSignature, getPublicFromKey } from './ellipticKey';
 
-const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string): string => {
+const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string): string | null => {
   const txIn: TxIn = tx.txIns[txInIndex];
-  const dataToSign = tx.id;
-  const referencedUTxOut = findUTxOut(txIn.txOutId, txIn.txOutIndex, getUTxOut());
+  const referencedUTxOut: UTxOut = findUTxOut(txIn.txOutId, txIn.txOutIndex, getUTxOut());
   if (referencedUTxOut === undefined) {
-    return;
+    return null;
   }
-  const key = ec.keyFromPrivate(privateKey, 'hex');
-  const signature = toHexString(key.sign(dataToSign).toDER()).toString();
-  return signature;
+  if (getPublicFromKey(privateKey) !== referencedUTxOut.address) {
+    console.log('couldn`t find the referenced uTxOut, not signing');
+    return null;
+  }
+  return getSignature(privateKey, tx.id);
 };
 
 const updateUTxOuts = (newTxs: Transaction[], uTxOutList: UTxOut[]) => {
   const newUTxOuts: UTxOut[] = newTxs
     .map(tx => tx.txOuts.map((txOut, index) => new UTxOut(tx.id, index, txOut.address, txOut.amount)))
     .flat();
-  // .reduce((a, b) => a.concat(b), []);
 
   const spentTxOuts = newTxs
     .map(tx => tx.txIns)
