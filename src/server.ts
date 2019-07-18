@@ -5,7 +5,7 @@ import { getBlockchain } from './blockBasis';
 import { startP2PServer, connectToPeers } from './p2p';
 import { createNewBlockWithBroadCast } from './p2pMessage';
 import './extensions'; // Array.prototype extension
-import initWallet from './wallet';
+import { initWallet } from './wallet';
 
 const PORT = process.env.HTTP_PORT || 3300;
 

@@ -1,6 +1,7 @@
 import ec from './elliptic';
 import path from 'path';
 import fs from 'fs';
+import { UTxOut } from './txBasis';
 
 const privateKeyLocation = path.join(__dirname, 'privateKey');
 
@@ -11,7 +12,23 @@ const generatePrivateKey = (): string => {
   return privateKey.toString(16);
 };
 
-const initWallet = (): void =>
+export const initWallet = (): void =>
   !fs.existsSync(privateKeyLocation) ? fs.writeFileSync(privateKeyLocation, generatePrivateKey()) : null;
 
-export default initWallet;
+const getPrivateFromWallet = (): string => fs.readFileSync(privateKeyLocation, 'utf-8').toString();
+
+const getPublicFromWallet = () => {
+  const privateKey = getPrivateFromWallet();
+  const key = ec.keyFromPrivate(privateKey, 'hex');
+  return key
+    .getPublic()
+    .encode('hex', false)
+    .toString();
+};
+
+const getBalance = (address: string, uTxOuts: UTxOut[]) => {
+  return uTxOuts
+    .filter(uTxOut => uTxOut.address === address)
+    .map(uTxOut => uTxOut.amount || 0)
+    .sum();
+};
