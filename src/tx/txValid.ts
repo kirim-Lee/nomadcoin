@@ -1,7 +1,7 @@
 import { TxIn, TxOut, Transaction, UTxOut, getUTxOut } from './txBasis';
 import { getTxId, findUTxOut } from './txFind';
-import ec from './elliptic';
-import Test from './test';
+import ec from '../utils/elliptic';
+import Test from '../utils/test';
 
 const COINBASE_AMOUNT = 50;
 

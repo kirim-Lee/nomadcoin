@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
-import { getBlockchain } from './blockBasis';
+import { getBlockchain } from './block/blockBasis';
 import { startP2PServer, connectToPeers } from './p2p';
-import { createNewBlockWithBroadCast } from './p2pMessage';
-import './extensions'; // Array.prototype extension
+import { createNewBlockWithBroadCast } from './p2p/p2pMessage';
+import './utils/extensions'; // Array.prototype extension
 import { initWallet } from './wallet';
 
 const PORT = process.env.HTTP_PORT || 3300;

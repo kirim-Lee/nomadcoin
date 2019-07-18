@@ -1,7 +1,7 @@
 import WebSockets from 'ws';
-import { replaceChain, addBlockToChain, createNewBlock } from './blockchain';
-import { isBlockStructureValid } from './blockValid';
-import Block, { getNewestBlock, getBlockchain } from './blockBasis';
+import { replaceChain, addBlockToChain, createNewBlock } from '../block';
+import { isBlockStructureValid } from '../block/blockValid';
+import Block, { getNewestBlock, getBlockchain } from '../block/blockBasis';
 import { getSockets } from './p2pBasis';
 
 // message types

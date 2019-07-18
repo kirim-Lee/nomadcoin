@@ -1,6 +1,6 @@
 import { Transaction, TxIn, UTxOut, getUTxOut } from './txBasis';
 import { findUTxOut } from './txFind';
-import { getSignature, getPublicFromKey } from './ellipticKey';
+import { getSignature, getPublicFromKey } from '../utils/ellipticKey';
 
 const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string): string | null => {
   const txIn: TxIn = tx.txIns[txInIndex];

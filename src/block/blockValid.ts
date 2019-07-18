@@ -1,5 +1,5 @@
 import Block, { getBlocksHash, getGenesisBlock } from './blockBasis';
-import { getTimeStamp } from './common';
+import { getTimeStamp } from '../utils/common';
 
 // 블록체인구조 검증
 const isBlockStructureValid = (block: Block): boolean => {

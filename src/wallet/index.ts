@@ -1,8 +1,8 @@
-import ec from './elliptic';
+import ec from '../utils/elliptic';
 import path from 'path';
 import fs from 'fs';
-import { UTxOut } from './txBasis';
-import { getPublicFromKey } from './ellipticKey';
+import { UTxOut } from '../tx/txBasis';
+import { getPublicFromKey } from '../utils/ellipticKey';
 
 const privateKeyLocation = path.join(__dirname, 'privateKey');
 
