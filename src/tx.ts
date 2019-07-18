@@ -3,7 +3,6 @@ import { toHexString } from './utils';
 import { Transaction, TxIn, UTxOut, getUTxOut } from './txBasis';
 import { findUTxOut } from './txFind';
 
-const COINBASE_AMOUNT = 50;
 const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string): string => {
   const txIn: TxIn = tx.txIns[txInIndex];
   const dataToSign = tx.id;

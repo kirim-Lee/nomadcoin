@@ -10,19 +10,10 @@
     "paths": {
       "*": ["/node_modules/*", "/src/types/*"]
     },
-    "typeRoots": [
-      "./node_modules/@types", "./src/types"
-    ],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "declaration": true
-
   },
-  "include": [
-    "./src/**/*",
-    "src/types/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ],
-  "sourceMap": true,
+  "include": ["./src/**/*", "src/types/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"],
+  "sourceMap": true
 }
