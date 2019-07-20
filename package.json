@@ -29,6 +29,6 @@
     "typescript": "^3.5.3"
   },
   "scripts": {
-    "dev": "nodemon --watch src --delay 1 --exec 'ts-node' src/server.ts"
+    "dev": "nodemon --watch src --delay 1 --exec \"ts-node\" src/server.ts"
   }
 }

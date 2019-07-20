@@ -34,3 +34,7 @@ Content-Type: application/json
 {
   "peer": "ws://localhost:3300"
 }
+
+
+###
+GET http://localhost:3300/me/balance

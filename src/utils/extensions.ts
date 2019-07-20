@@ -10,7 +10,7 @@ const extension = (() => {
   };
 
   Array.prototype.sum = function<T>(this: T[]): any {
-    return this.reduce((a: any, b: any): any => a + b);
+    return this.reduce((a: any, b: any): any => a + b, 0);
   };
 })();
 
