@@ -1,7 +1,8 @@
 import { Transaction, TxIn, UTxOut, getUTxOut, TxOut } from './txBasis';
 import { findUTxOut, getTxId } from './txFind';
 import { getSignature, getPublicFromKey } from '../utils/ellipticKey';
-import { findAmountInUTxOuts } from '../wallet/walletBalance';
+import { findAmountInUTxOuts } from '../wallet';
+import { COINBASE_AMOUNT } from './txValid';
 
 export const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string): string | null => {
   const txIn: TxIn = tx.txIns[txInIndex];
@@ -31,7 +32,7 @@ const updateUTxOuts = (newTxs: Transaction[], uTxOutList: UTxOut[]) => {
     .concat(newUTxOuts);
 };
 
-const createTx = (receiverAddress: string, amount: number, privateKey: string) => {
+const createTx = (receiverAddress: string, amount: number, privateKey: string): Transaction => {
   const myAddress: string = getPublicFromKey(privateKey);
   const myUTxOuts: UTxOut[] = getUTxOut().filter(uTxOut => uTxOut.address === myAddress);
 
@@ -64,4 +65,13 @@ const createTxOuts = (receiverAddress: string, myAddress: string, amount: number
     const leftOverTxOut = new TxOut(myAddress, leftOverAmount);
     return [receiverTxOut, leftOverAmount];
   }
+};
+
+export const createCoinbaseTx = (address: string, blockId: string): Transaction => {
+  const txIn = new TxIn(blockId, 0, '');
+  const txOut = new TxOut(address, COINBASE_AMOUNT);
+  const tx = new Transaction('', [txIn], [txOut]);
+  tx.id = getTxId(tx);
+
+  return tx;
 };

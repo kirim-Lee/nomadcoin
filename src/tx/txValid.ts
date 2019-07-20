@@ -3,7 +3,7 @@ import { getTxId, findUTxOut } from './txFind';
 import ec from '../utils/elliptic';
 import Test from '../utils/test';
 
-const COINBASE_AMOUNT = 50;
+export const COINBASE_AMOUNT = 50;
 
 // TxIn 구조검사
 const isTxInStructurValid = (txIn: TxIn): boolean =>
