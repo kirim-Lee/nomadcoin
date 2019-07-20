@@ -32,8 +32,8 @@ const sendMessageToAll = (message: IMessage): void => getSockets().forEach((ws):
 
 export const broadcastNewBlock = () => sendMessageToAll(responseLatest());
 
-export const createNewBlockWithBroadCast = (data: string): Block => {
-  const newBlock = createNewBlock(data);
+export const createNewBlockWithBroadCast = (): Block => {
+  const newBlock = createNewBlock();
   if (newBlock) {
     broadcastNewBlock();
   }

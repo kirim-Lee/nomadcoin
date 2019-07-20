@@ -2,9 +2,22 @@ import Block, { getNewestBlock, getBlockchain, setBlockchain } from './blockBasi
 import { isChainValid, isBlockValid } from './blockValid';
 import findBlock from './blockFind';
 import { getTimeStamp } from '../utils/common';
+import { createCoinbaseTx } from '../tx';
+import { getPublicFromWallet } from '../wallet';
+import { Transaction } from '../tx/txBasis';
+import CryptoJS from 'crypto-js';
+
+export const createNewBlock = () => {
+  const coinbaseTx = createCoinbaseTx(
+    getPublicFromWallet(),
+    CryptoJS.SHA256(new Date().getTime().toString() + (getNewestBlock().index + 1)).toString()
+  );
+  const blockData = [coinbaseTx];
+  return createNewRawBlock(blockData);
+};
 
 // 새로운 블록 만들기
-export const createNewBlock = (data: string): Block => {
+const createNewRawBlock = (data: Transaction[]): Block => {
   const previousBlock = getNewestBlock();
   const newBlockIndex = previousBlock.index + 1;
   const newTimeStamp = getTimeStamp();

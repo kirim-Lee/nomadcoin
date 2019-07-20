@@ -19,8 +19,7 @@ app
     res.send(getBlockchain());
   })
   .post((req: Request, res: Response) => {
-    const { data } = req.body;
-    const newBlock = createNewBlockWithBroadCast(data);
+    const newBlock = createNewBlockWithBroadCast();
     res.send(newBlock);
   });
 

@@ -1,16 +1,16 @@
 import Block, { getBlocksHash, getGenesisBlock } from './blockBasis';
 import { getTimeStamp } from '../utils/common';
+import Test from '../utils/test';
 
 // 블록체인구조 검증
-const isBlockStructureValid = (block: Block): boolean => {
-  return (
-    typeof block.index === 'number' &&
-    typeof block.hash === 'string' &&
-    typeof block.previousHash === 'string' &&
-    typeof block.timestamp === 'number' &&
-    typeof block.data === 'string' // TODO : data will be json
-  );
-};
+const isBlockStructureValid = (block: Block): boolean =>
+  Test([
+    [typeof block.index !== 'number', 'block index type invalid'],
+    [typeof block.hash !== 'string', 'block hash type invalid'],
+    [typeof block.previousHash !== 'string', 'block previous hash invalid'],
+    [typeof block.timestamp !== 'number', 'block timestamp type invalid'],
+    [typeof block.data !== 'object', 'block data type invalid']
+  ]);
 
 // 최초블록 검증
 const isGenesisValid = (block: Block): boolean => {

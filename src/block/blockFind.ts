@@ -1,5 +1,6 @@
 import hexToBinary from 'hex-to-binary';
 import Block, { getNewestBlock, getBlockchain, createHash } from './blockBasis';
+import { Transaction } from '../tx/txBasis';
 
 const BLOCK_GENERATION_INTERVAL = 10;
 const DIFFICULTY_ADJUSTMENT_INTERVAL = 10;
@@ -31,7 +32,7 @@ const hashMatchedDifficulty = (hash: string, difficulty: number): boolean => {
   return hashInBinary.startsWith(requiredZeros);
 };
 
-const findBlock = (index: number, previousHash: string, timestamp: number, data: string): Block => {
+const findBlock = (index: number, previousHash: string, timestamp: number, data: Transaction[]): Block => {
   let nonce: number = 0;
   const difficulty: number = findDifficulty();
   while (true) {

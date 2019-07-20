@@ -1,11 +1,12 @@
 import CryptoJS = require('crypto-js');
+import { Transaction } from '../tx/txBasis';
 
 class Block {
   public index: number;
   public hash: string;
   public previousHash: string;
   public timestamp: number;
-  public data: string;
+  public data: Transaction[];
   public difficulty: number;
   public nonce: number;
   constructor(
@@ -13,7 +14,7 @@ class Block {
     hash: string,
     previousHash: string,
     timestamp: number,
-    data: string,
+    data: Transaction[],
     difficulty: number,
     nonce: number
   ) {
@@ -32,7 +33,7 @@ const genesisBlock = new Block(
   '54757EFC4548C8AB98AD9F6169FFFD5283F5047E2A4B87A23AA90AF3EB793009',
   null,
   1563237431,
-  'this is the genesis',
+  [],
   0,
   0
 );
@@ -43,7 +44,7 @@ export const createHash = (
   index: number,
   previousHash: string,
   timestamp: number,
-  data: string,
+  data: Transaction[],
   difficulty: number,
   nonce: number
 ): string => CryptoJS.SHA256(index + previousHash + timestamp + JSON.stringify(data) + difficulty + nonce).toString();
