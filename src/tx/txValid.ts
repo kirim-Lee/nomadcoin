@@ -41,25 +41,6 @@ const isTxStructureValid = (tx: Transaction): boolean =>
     [tx.txOuts.map(isTxOutStructurValid).some(valid => !valid), 'the structure of on of the txOut is not valid']
   ]);
 
-// tx valid
-const validateTx = (tx: Transaction): boolean =>
-  Test(<[boolean, string?][]>[
-    [!isTxStructureValid(tx)],
-    [getTxId(tx) != tx.id],
-    [!hasValidTxs(tx)],
-    [amountInTxIns(tx) !== amountInTxOuts(tx)]
-  ]);
-
-// coinbase valid
-const validateCoinbaseTx = (tx: Transaction, blockIndex: number): boolean =>
-  Test(<[boolean, string?][]>[
-    [getTxId(tx) !== tx.id],
-    [tx.txIns.length !== 1],
-    [tx.txIns[0].txOutIndex !== blockIndex],
-    [tx.txOuts.length > 1],
-    [tx.txOuts[0].amount !== COINBASE_AMOUNT]
-  ]);
-
 // enable unlock check
 const validateTxIn = (txIn: TxIn, tx: Transaction, uTxOutList: UTxOut[]): boolean => {
   // txIn과 uTxOut에 같은 [txOutId, txOutIndex] 있는지 체크
@@ -90,3 +71,38 @@ const amountInTxIns = (tx: Transaction) =>
 
 // get amount TxOuts
 const amountInTxOuts = (tx: Transaction) => tx.txOuts.map(txOut => txOut.amount || 0).sum();
+
+// tx valid
+const validateTx = (tx: Transaction): boolean =>
+  Test(<[boolean, string?][]>[
+    [!isTxStructureValid(tx)],
+    [getTxId(tx) != tx.id],
+    [!hasValidTxs(tx)],
+    [amountInTxIns(tx) !== amountInTxOuts(tx)]
+  ]);
+
+// coinbase valid
+const validateCoinbaseTx = (tx: Transaction, blockIndex: number): boolean =>
+  Test(<[boolean, string?][]>[
+    [getTxId(tx) !== tx.id],
+    [tx.txIns.length !== 1],
+    [tx.txIns[0].txOutIndex !== blockIndex],
+    [tx.txOuts.length > 1],
+    [tx.txOuts[0].amount !== COINBASE_AMOUNT]
+  ]);
+
+const hasTxInDuplicates = (txs: Transaction[]): boolean => {
+  const groupTxIns = txs
+    .map(tx => tx.txIns)
+    .flat()
+    .group(txIn => txIn.txOutId + txIn.txOutIndex);
+  return Object.values(groupTxIns).some(value => value > 1);
+};
+
+// coinbase block and tx valid
+export const validateBlockTx = (txs: Transaction[], uTxOutList: UTxOut[], blockIndex: number): boolean =>
+  Test([
+    [!validateCoinbaseTx(txs[0], blockIndex), 'coinbase tx is not valid'],
+    [hasTxInDuplicates(txs), 'txIns duplicated'],
+    [txs.slice(1).some(tx => validateTx(tx)), 'no coinbase txs aren`t valid']
+  ]);

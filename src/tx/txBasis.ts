@@ -1,4 +1,4 @@
-const uTxOuts: UTxOut[] = [];
+let uTxOuts: UTxOut[] = [];
 
 class TxOut {
   public address: string;
@@ -45,9 +45,9 @@ class UTxOut {
 }
 
 const getUTxOut = (): UTxOut[] => uTxOuts;
-const addUTxOut = (uTxOut: UTxOut): UTxOut[] => {
-  uTxOuts.push(uTxOut);
+const setUTxOut = (newUTxOuts: UTxOut[]): UTxOut[] => {
+  uTxOuts = newUTxOuts;
   return uTxOuts;
 };
 
-export { TxOut, TxIn, Transaction, UTxOut, getUTxOut, addUTxOut };
+export { TxOut, TxIn, Transaction, UTxOut, getUTxOut, setUTxOut };

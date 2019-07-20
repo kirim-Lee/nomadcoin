@@ -2,7 +2,7 @@ import { Transaction, TxIn, UTxOut, getUTxOut, TxOut } from './txBasis';
 import { findUTxOut, getTxId } from './txFind';
 import { getSignature, getPublicFromKey } from '../utils/ellipticKey';
 import { findAmountInUTxOuts } from '../wallet';
-import { COINBASE_AMOUNT } from './txValid';
+import { COINBASE_AMOUNT, validateBlockTx } from './txValid';
 
 export const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string): string | null => {
   const txIn: TxIn = tx.txIns[txInIndex];
@@ -17,7 +17,7 @@ export const signTxIn = (tx: Transaction, txInIndex: number, privateKey: string)
   return getSignature(privateKey, tx.id);
 };
 
-const updateUTxOuts = (newTxs: Transaction[], uTxOutList: UTxOut[]) => {
+const updateUTxOuts = (newTxs: Transaction[], uTxOutList: UTxOut[]): UTxOut[] => {
   const newUTxOuts: UTxOut[] = newTxs
     .map(tx => tx.txOuts.map((txOut, index) => new UTxOut(tx.id, index, txOut.address, txOut.amount)))
     .flat();
@@ -30,6 +30,8 @@ const updateUTxOuts = (newTxs: Transaction[], uTxOutList: UTxOut[]) => {
   const resultingUTxOuts = uTxOutList
     .filter(uTxOut => !findUTxOut(uTxOut.txOutId, uTxOut.txOutIndex, spentTxOuts))
     .concat(newUTxOuts);
+
+  return resultingUTxOuts;
 };
 
 const createTx = (receiverAddress: string, amount: number, privateKey: string): Transaction => {
@@ -67,11 +69,18 @@ const createTxOuts = (receiverAddress: string, myAddress: string, amount: number
   }
 };
 
-export const createCoinbaseTx = (address: string, blockId: string): Transaction => {
-  const txIn = new TxIn(blockId, 0, '');
+export const createCoinbaseTx = (address: string, blockIndex: number): Transaction => {
+  const txIn = new TxIn('', blockIndex, '');
   const txOut = new TxOut(address, COINBASE_AMOUNT);
   const tx = new Transaction('', [txIn], [txOut]);
   tx.id = getTxId(tx);
 
   return tx;
+};
+
+export const processTxs = (txs: Transaction[], uTxOutList: UTxOut[], blockIndex: number) => {
+  if (!validateBlockTx(txs, uTxOutList, blockIndex)) {
+    return null;
+  }
+  return updateUTxOuts(txs, uTxOutList);
 };

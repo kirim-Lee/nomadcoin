@@ -2,16 +2,12 @@ import Block, { getNewestBlock, getBlockchain, setBlockchain } from './blockBasi
 import { isChainValid, isBlockValid } from './blockValid';
 import findBlock from './blockFind';
 import { getTimeStamp } from '../utils/common';
-import { createCoinbaseTx } from '../tx';
+import { createCoinbaseTx, processTxs } from '../tx';
 import { getPublicFromWallet } from '../wallet';
-import { Transaction } from '../tx/txBasis';
-import CryptoJS from 'crypto-js';
+import { Transaction, getUTxOut, UTxOut, setUTxOut } from '../tx/txBasis';
 
 export const createNewBlock = () => {
-  const coinbaseTx = createCoinbaseTx(
-    getPublicFromWallet(),
-    CryptoJS.SHA256(new Date().getTime().toString() + (getNewestBlock().index + 1)).toString()
-  );
+  const coinbaseTx = createCoinbaseTx(getPublicFromWallet(), getNewestBlock().index + 1);
   const blockData = [coinbaseTx];
   return createNewRawBlock(blockData);
 };
@@ -52,7 +48,13 @@ const sumDifficulty = (chain: Block[]): number =>
 // 블록추가
 export const addBlockToChain = (candidateBlock: Block): boolean => {
   if (isBlockValid(candidateBlock, getNewestBlock())) {
-    setBlockchain([...getBlockchain(), candidateBlock]);
+    const processedTx: UTxOut[] | null = processTxs(candidateBlock.data, getUTxOut(), candidateBlock.index);
+    if (processedTx === null) {
+      return false;
+    } else {
+      setUTxOut(processedTx);
+      setBlockchain([...getBlockchain(), candidateBlock]);
+    }
     return true;
   } else {
     return false;
