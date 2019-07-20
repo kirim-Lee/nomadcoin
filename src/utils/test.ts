@@ -1,5 +1,5 @@
 const unitTest = (boolean: boolean, msg?: string): boolean | string => {
-  if (!boolean) {
+  if (boolean) {
     return msg || '';
   }
   return true;
