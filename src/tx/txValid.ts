@@ -55,15 +55,15 @@ const validateTxIn = (txIn: TxIn, tx: Transaction, uTxOutList: UTxOut[]): boolea
 };
 
 // check txIns valid (unlock check)
-const hasValidTxs = (tx: Transaction): boolean =>
-  tx.txIns.map((txIn: TxIn): boolean => validateTxIn(txIn, tx, getUTxOut())).some((bool: boolean) => !bool);
+const hasValidTxs = (tx: Transaction, uTxOutList: UTxOut[]): boolean =>
+  tx.txIns.map((txIn: TxIn): boolean => validateTxIn(txIn, tx, uTxOutList)).some((bool: boolean) => !bool);
 
 // get amount TxIns
-const amountInTxIns = (tx: Transaction) =>
+const amountInTxIns = (tx: Transaction, uTxOutList: UTxOut[]) =>
   tx.txIns
     .map(
       (txIn: TxIn): number => {
-        const txOut = findUTxOut(txIn.txOutId, txIn.txOutIndex, getUTxOut());
+        const txOut = findUTxOut(txIn.txOutId, txIn.txOutIndex, uTxOutList);
         return (txOut && txOut.amount) || 0;
       }
     )
@@ -73,12 +73,12 @@ const amountInTxIns = (tx: Transaction) =>
 const amountInTxOuts = (tx: Transaction) => tx.txOuts.map(txOut => txOut.amount || 0).sum();
 
 // tx valid
-const validateTx = (tx: Transaction): boolean =>
+export const validateTx = (tx: Transaction, uTxOutList: UTxOut[]): boolean =>
   Test(<[boolean, string?][]>[
     [!isTxStructureValid(tx)],
     [getTxId(tx) != tx.id],
-    [!hasValidTxs(tx)],
-    [amountInTxIns(tx) !== amountInTxOuts(tx)]
+    [!hasValidTxs(tx, uTxOutList)],
+    [amountInTxIns(tx, uTxOutList) !== amountInTxOuts(tx)]
   ]);
 
 // coinbase valid
@@ -91,7 +91,7 @@ const validateCoinbaseTx = (tx: Transaction, blockIndex: number): boolean =>
     [tx.txOuts[0].amount !== COINBASE_AMOUNT]
   ]);
 
-const hasTxInDuplicates = (txs: Transaction[]): boolean => {
+export const hasTxInDuplicates = (txs: Transaction[]): boolean => {
   const groupTxIns = txs
     .map(tx => tx.txIns)
     .flat()
@@ -104,5 +104,5 @@ export const validateBlockTx = (txs: Transaction[], uTxOutList: UTxOut[], blockI
   Test([
     [!validateCoinbaseTx(txs[0], blockIndex), 'coinbase tx is not valid'],
     [hasTxInDuplicates(txs), 'txIns duplicated'],
-    [txs.slice(1).some(tx => validateTx(tx)), 'no coinbase txs aren`t valid']
+    [txs.slice(1).some(tx => validateTx(tx, uTxOutList)), 'no coinbase txs aren`t valid']
   ]);

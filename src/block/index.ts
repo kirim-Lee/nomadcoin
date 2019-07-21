@@ -2,9 +2,10 @@ import Block, { getNewestBlock, getBlockchain, setBlockchain } from './blockBasi
 import { isChainValid, isBlockValid } from './blockValid';
 import findBlock from './blockFind';
 import { getTimeStamp } from '../utils/common';
-import { createCoinbaseTx, processTxs } from '../tx';
-import { getPublicFromWallet } from '../wallet';
+import { createCoinbaseTx, processTxs, createTx } from '../tx';
+import { getPublicFromWallet, getPrivateFromWallet } from '../wallet';
 import { Transaction, getUTxOut, UTxOut, setUTxOut } from '../tx/txBasis';
+import { addToMemPool } from '../memPool';
 
 export const createNewBlock = () => {
   const coinbaseTx = createCoinbaseTx(getPublicFromWallet(), getNewestBlock().index + 1);
@@ -59,4 +60,9 @@ export const addBlockToChain = (candidateBlock: Block): boolean => {
   } else {
     return false;
   }
+};
+
+const sendTx = (address: string, amount: number) => {
+  const tx = createTx(address, amount, getPrivateFromWallet());
+  addToMemPool(tx, getUTxOut());
 };

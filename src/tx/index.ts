@@ -34,7 +34,7 @@ const updateUTxOuts = (newTxs: Transaction[], uTxOutList: UTxOut[]): UTxOut[] =>
   return resultingUTxOuts;
 };
 
-const createTx = (receiverAddress: string, amount: number, privateKey: string): Transaction => {
+export const createTx = (receiverAddress: string, amount: number, privateKey: string): Transaction => {
   const myAddress: string = getPublicFromKey(privateKey);
   const myUTxOuts: UTxOut[] = getUTxOut().filter(uTxOut => uTxOut.address === myAddress);
 

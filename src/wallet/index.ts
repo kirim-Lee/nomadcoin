@@ -16,7 +16,7 @@ const generatePrivateKey = (): string => {
 export const initWallet = (): void =>
   !fs.existsSync(privateKeyLocation) ? fs.writeFileSync(privateKeyLocation, generatePrivateKey()) : null;
 
-const getPrivateFromWallet = (): string => fs.readFileSync(privateKeyLocation, 'utf8').toString();
+export const getPrivateFromWallet = (): string => fs.readFileSync(privateKeyLocation, 'utf8').toString();
 
 export const getPublicFromWallet = (): string => {
   const privateKey = getPrivateFromWallet();
