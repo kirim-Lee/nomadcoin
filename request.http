@@ -1,4 +1,4 @@
-GET http://localhost:3000/blocks
+GET http://localhost:3300/blocks
 
 ### 
 GET http://localhost:4000/blocks
@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/peers
+POST http://localhost:3300/peers
 Content-Type: application/json
 
 {
@@ -25,16 +25,16 @@ POST http://localhost:4000/peers
 Content-Type: application/json
 
 {
-  "peer": "ws://localhost:3000"
+  "peer": "ws://localhost:3300"
 }
 
 
 ###
-GET http://localhost:3000/me/balance
+GET http://localhost:3300/me/balance
 
 
 ###
-POST http://localhost:3000/blocks
+POST http://localhost:3300/blocks
 Content-Type: application/json
 
 {
@@ -42,7 +42,7 @@ Content-Type: application/json
 }
 
 ### 
-POST http://localhost:3000/transactions
+POST http://localhost:3300/transactions
 Content-Type: application/json
 
 {

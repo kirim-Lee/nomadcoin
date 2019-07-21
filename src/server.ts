@@ -8,7 +8,7 @@ import { initWallet, getAccountBalance } from './wallet';
 import './utils/extensions'; // Array.prototype extension
 import { sendTx } from './block';
 
-const PORT = process.env.HTTP_PORT || 3000;
+const PORT = process.env.HTTP_PORT || 3300;
 
 const app = express();
 app.use(bodyParser.json());
