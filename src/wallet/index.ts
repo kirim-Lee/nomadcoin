@@ -35,7 +35,7 @@ export const getAccountBalance = () => getBalance(getPublicFromWallet(), getUTxO
 export const findAmountInUTxOuts = (
   amountNeeded: number,
   myUtxOuts: UTxOut[]
-): { includedUTxOuts: UTxOut[]; leftOverAmount: number } | null => {
+): { includedUTxOuts: UTxOut[]; leftOverAmount: number } => {
   let currentAmount = 0;
   const includedUTxOuts = [];
 
@@ -49,6 +49,5 @@ export const findAmountInUTxOuts = (
     }
   }
 
-  console.log('not enough founds');
-  return null;
+  throw Error('not enough founds');
 };

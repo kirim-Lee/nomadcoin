@@ -34,12 +34,27 @@ const updateUTxOuts = (newTxs: Transaction[], uTxOutList: UTxOut[]): UTxOut[] =>
   return resultingUTxOuts;
 };
 
-export const createTx = (receiverAddress: string, amount: number, privateKey: string): Transaction => {
-  const myAddress: string = getPublicFromKey(privateKey);
-  const myUTxOuts: UTxOut[] = getUTxOut().filter(uTxOut => uTxOut.address === myAddress);
+const filterUTxOutsFromMemPool = (uTxOutList: UTxOut[], memPool: Transaction[]): UTxOut[] => {
+  const txIns = memPool.map(tx => tx.txIns).flat();
+  return uTxOutList.filter(
+    uTxOut => !txIns.some(txIn => txIn.txOutIndex === uTxOut.txOutIndex && txIn.txOutId === uTxOut.txOutId)
+  );
+};
 
+export const createTx = (
+  receiverAddress: string,
+  amount: number,
+  privateKey: string,
+  uTxOutList: UTxOut[],
+  memPool: Transaction[]
+): Transaction => {
+  const myAddress: string = getPublicFromKey(privateKey);
+  const myUTxOuts: UTxOut[] = uTxOutList.filter(uTxOut => uTxOut.address === myAddress);
+  const filteredUTxOuts = filterUTxOutsFromMemPool(myUTxOuts, memPool);
+
+  console.log(filteredUTxOuts);
   // 거래될 uTxOut, 그 uTxOut에서 필요한 amount 차감한 나머지를 구함
-  const { includedUTxOuts, leftOverAmount } = findAmountInUTxOuts(amount, myUTxOuts);
+  const { includedUTxOuts, leftOverAmount } = findAmountInUTxOuts(amount, filteredUTxOuts);
   const toUnSignedTxIn = (uTxOut: UTxOut) => {
     const { txOutId, txOutIndex } = uTxOut;
     return new TxIn(txOutId, txOutIndex, getSignature(privateKey, myAddress));
