@@ -39,17 +39,17 @@ app
   .route('/transactions')
   .get((req: Request, res: Response) => {})
   .post((req: Request, res: Response) => {
-    try {
-      const { address, amount } = req.body;
-      if (address === undefined || amount === undefined) {
-        throw Error('please specify address and amount');
-      } else {
-        const tx = sendTx(address, amount);
-        res.send(tx);
-      }
-    } catch (err) {
-      res.status(400).send(err.message);
+    //try {
+    const { address, amount } = req.body;
+    if (address === undefined || amount === undefined) {
+      throw Error('please specify address and amount');
+    } else {
+      const tx = sendTx(address, amount);
+      res.send(tx);
     }
+    //} catch (err) {
+    //res.status(400).send(err.message);
+    //}
   });
 
 const server = app.listen(PORT, () => console.log(`Nomadcoin HTTP server running on ${PORT}`));

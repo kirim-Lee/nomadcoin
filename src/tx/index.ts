@@ -59,13 +59,13 @@ export const createTx = (receiverAddress: string, amount: number, privateKey: st
   return tx;
 };
 
-const createTxOuts = (receiverAddress: string, myAddress: string, amount: number, leftOverAmount: number): any[] => {
+const createTxOuts = (receiverAddress: string, myAddress: string, amount: number, leftOverAmount: number): TxOut[] => {
   const receiverTxOut = new TxOut(receiverAddress, amount);
   if (leftOverAmount === 0) {
     return [receiverTxOut];
   } else {
     const leftOverTxOut = new TxOut(myAddress, leftOverAmount);
-    return [receiverTxOut, leftOverAmount];
+    return [receiverTxOut, leftOverTxOut];
   }
 };
 

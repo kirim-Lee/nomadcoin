@@ -6,10 +6,11 @@ import { createCoinbaseTx, processTxs, createTx } from '../tx';
 import { getPublicFromWallet, getPrivateFromWallet } from '../wallet';
 import { Transaction, getUTxOut, UTxOut, setUTxOut } from '../tx/txBasis';
 import { addToMemPool } from '../memPool';
+import { getMemPool } from '../memPool/memPoolBasis';
 
 export const createNewBlock = () => {
   const coinbaseTx = createCoinbaseTx(getPublicFromWallet(), getNewestBlock().index + 1);
-  const blockData = [coinbaseTx];
+  const blockData = [coinbaseTx].concat(getMemPool());
   return createNewRawBlock(blockData);
 };
 

@@ -17,7 +17,7 @@ export const validateTxPool = (tx: Transaction, memPool: Transaction[], uTxOutLi
   return Test(
     [
       [validateTx(tx, uTxOutList), 'This tx is invalid. will not add it to pool'],
-      [idDuplicates(tx.txIns, memPool), 'This tx is not valid for the pool. will not add it to pool']
+      [idDuplicates(tx.txIns, memPool), 'This tx is duplicated for the pool. will not add it to pool']
     ],
     true
   );
