@@ -62,7 +62,8 @@ export const addBlockToChain = (candidateBlock: Block): boolean => {
   }
 };
 
-const sendTx = (address: string, amount: number) => {
+export const sendTx = (address: string, amount: number) => {
   const tx = createTx(address, amount, getPrivateFromWallet());
   addToMemPool(tx, getUTxOut());
+  return tx;
 };

@@ -9,7 +9,7 @@ export const COINBASE_AMOUNT = 50;
 const isTxInStructurValid = (txIn: TxIn): boolean =>
   Test(<[boolean, string?][]>[
     [txIn === null, 'txIn is null'],
-    [typeof txIn.signature === 'string', 'typeof txIn signature invalid'],
+    [typeof txIn.signature !== 'string', 'typeof txIn signature invalid'],
     [typeof txIn.txOutId !== 'string', 'typeof txIn txOutId invalid'],
     [typeof txIn.txOutIndex !== 'number', 'typeof txIn txOutIndex invalid']
   ]);
