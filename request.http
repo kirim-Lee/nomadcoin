@@ -40,6 +40,8 @@ Content-Type: application/json
 {
   "data": "my block"
 }
+### 
+GET http://localhost:3300/transactions
 
 ### 
 POST http://localhost:3300/transactions

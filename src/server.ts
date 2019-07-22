@@ -7,6 +7,7 @@ import { startP2PServer, connectToPeers } from './p2p';
 import { createNewBlockWithBroadCast } from './p2p/p2pMessage';
 import { initWallet, getAccountBalance } from './wallet';
 import { sendTx } from './block';
+import { getMemPool } from './memPool/memPoolBasis';
 
 const PORT = process.env.HTTP_PORT || 3300;
 
@@ -37,7 +38,9 @@ app.get('/me/balance', (req: Request, res: Response) => {
 
 app
   .route('/transactions')
-  .get((req: Request, res: Response) => {})
+  .get((req: Request, res: Response) => {
+    res.send(getMemPool())
+  })
   .post((req: Request, res: Response) => {
     //try {
     const { address, amount } = req.body;
