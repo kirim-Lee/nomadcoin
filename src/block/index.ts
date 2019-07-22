@@ -1,5 +1,5 @@
 import Block, { getNewestBlock, getBlockchain, setBlockchain } from './blockBasis';
-import { isChainValid, isBlockValid } from './blockValid';
+import { isChainValid, isBlockValid, getForeignUTxOuts } from './blockValid';
 import findBlock from './blockFind';
 import { getTimeStamp } from '../utils/common';
 import { createCoinbaseTx, processTxs, createTx } from '../tx';
@@ -7,7 +7,7 @@ import { getPublicFromWallet, getPrivateFromWallet } from '../wallet';
 import { Transaction, getUTxOut, UTxOut, setUTxOut } from '../tx/txBasis';
 import { addToMemPool, updateMemPool } from '../memPool';
 import { getMemPool } from '../memPool/memPoolBasis';
-import { broadcastMemPool } from '../p2p/p2pMessage';
+import { broadcastMemPool, broadcastNewBlock } from '../p2p/p2pMessage';
 
 export const createNewBlock = () => {
   const coinbaseTx = createCoinbaseTx(getPublicFromWallet(), getNewestBlock().index + 1);
@@ -35,6 +35,10 @@ export const replaceChain = (newChain: Block[]): boolean => {
       (newDifficulty === previousDifficulty && newChain.length > getBlockchain().length))
   ) {
     setBlockchain(newChain);
+    // my think : 다음 3줄은 구지 필요 없는것 같다.
+    setUTxOut(getForeignUTxOuts(newChain));
+    updateMemPool(getUTxOut());
+    broadcastNewBlock();
     return true;
   } else {
     return false;

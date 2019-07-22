@@ -1,6 +1,8 @@
 import Block, { getBlocksHash, getGenesisBlock } from './blockBasis';
 import { getTimeStamp } from '../utils/common';
 import Test from '../utils/test';
+import { UTxOut } from '../tx/txBasis';
+import { processTxs } from '../tx';
 
 // 블록체인구조 검증
 const isBlockStructureValid = (block: Block): boolean =>
@@ -64,4 +66,12 @@ const isChainValid = (candidateChain: Block[]): boolean => {
 const isTimeStampValid = (newBlock: Block, oldBlock: Block): boolean =>
   oldBlock.timestamp - 60 < newBlock.timestamp && newBlock.timestamp - 60 < getTimeStamp();
 
-export { isBlockValid, isChainValid, isBlockStructureValid };
+const getForeignUTxOuts = (candidateChain: Block[]): UTxOut[] | null => {
+  let prevOutList: UTxOut[] = [];
+  candidateChain.forEach((block: Block) => {
+    prevOutList = processTxs(block.data, prevOutList, block.index);
+    return prevOutList;
+  });
+  return prevOutList;
+};
+export { isBlockValid, isChainValid, isBlockStructureValid, getForeignUTxOuts };

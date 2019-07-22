@@ -92,7 +92,7 @@ export const createCoinbaseTx = (address: string, blockIndex: number): Transacti
   return tx;
 };
 
-export const processTxs = (txs: Transaction[], uTxOutList: UTxOut[], blockIndex: number) => {
+export const processTxs = (txs: Transaction[], uTxOutList: UTxOut[], blockIndex: number): UTxOut[] => {
   if (!validateBlockTx(txs, uTxOutList, blockIndex)) {
     return null;
   }

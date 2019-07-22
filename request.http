@@ -34,6 +34,10 @@ GET http://localhost:4000/me/balance
 
 
 ###
+GET http://localhost:3300/me/balance
+
+
+###
 POST http://localhost:3300/blocks
 Content-Type: application/json
 
