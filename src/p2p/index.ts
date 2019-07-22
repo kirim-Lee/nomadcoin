@@ -34,6 +34,8 @@ const connectToPeers = (newPeer: string): void => {
   ws.on('open', () => {
     initSocketConnection(ws);
   });
+  ws.on('error', () => console.log('connection failed'));
+  ws.on('close', () => console.log('connection closed'));
 };
 
 export { startP2PServer, connectToPeers };
