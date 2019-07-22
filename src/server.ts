@@ -1,3 +1,4 @@
+import './utils/extensions'; // Array.prototype extension
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
@@ -5,7 +6,6 @@ import { getBlockchain } from './block/blockBasis';
 import { startP2PServer, connectToPeers } from './p2p';
 import { createNewBlockWithBroadCast } from './p2p/p2pMessage';
 import { initWallet, getAccountBalance } from './wallet';
-import './utils/extensions'; // Array.prototype extension
 import { sendTx } from './block';
 
 const PORT = process.env.HTTP_PORT || 3300;
