@@ -52,7 +52,6 @@ export const createTx = (
   const myUTxOuts: UTxOut[] = uTxOutList.filter(uTxOut => uTxOut.address === myAddress);
   const filteredUTxOuts = filterUTxOutsFromMemPool(myUTxOuts, memPool);
 
-  console.log(filteredUTxOuts);
   // 거래될 uTxOut, 그 uTxOut에서 필요한 amount 차감한 나머지를 구함
   const { includedUTxOuts, leftOverAmount } = findAmountInUTxOuts(amount, filteredUTxOuts);
   const toUnSignedTxIn = (uTxOut: UTxOut) => {

@@ -5,7 +5,7 @@ import { getTimeStamp } from '../utils/common';
 import { createCoinbaseTx, processTxs, createTx } from '../tx';
 import { getPublicFromWallet, getPrivateFromWallet } from '../wallet';
 import { Transaction, getUTxOut, UTxOut, setUTxOut } from '../tx/txBasis';
-import { addToMemPool } from '../memPool';
+import { addToMemPool, updateMemPool } from '../memPool';
 import { getMemPool } from '../memPool/memPoolBasis';
 
 export const createNewBlock = () => {
@@ -54,8 +54,9 @@ export const addBlockToChain = (candidateBlock: Block): boolean => {
     if (processedTx === null) {
       return false;
     } else {
-      setUTxOut(processedTx);
       setBlockchain([...getBlockchain(), candidateBlock]);
+      updateMemPool(getUTxOut());
+      setUTxOut(processedTx);
     }
     return true;
   } else {
