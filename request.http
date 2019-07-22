@@ -1,3 +1,11 @@
+
+###
+GET http://localhost:3300/blocks/e6679145086328f6cdf1ec6ae6e1e63c871b945a6ed2961d4eaa6b6eb1480102
+
+###
+GET http://localhost:3300/transactions/961e698bb8ec49f99d6b56f2a8c1566c84f5c8c58e9dd33e20578dd79f4b3683
+
+###
 GET http://localhost:3300/blocks
 
 ### 

@@ -2,12 +2,13 @@ import './utils/extensions'; // Array.prototype extension
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
-import { getBlockchain } from './block/blockBasis';
+import Block, { getBlockchain } from './block/blockBasis';
 import { startP2PServer, connectToPeers } from './p2p';
 import { createNewBlockWithBroadCast } from './p2p/p2pMessage';
 import { initWallet, getAccountBalance, getPublicFromWallet } from './wallet';
 import { sendTx } from './block';
 import { getMemPool } from './memPool/memPoolBasis';
+import { Transaction } from './tx/txBasis';
 
 const PORT = process.env.HTTP_PORT || 3300;
 
@@ -40,6 +41,18 @@ app.get('/me/address', (req: Request, res: Response) => {
   res.send(getPublicFromWallet());
 });
 
+app.get('/blocks/:hash', (req: Request, res: Response) => {
+  const {
+    params: { hash }
+  } = req;
+  const block = getBlockchain().find((block: Block) => block.hash === hash);
+  if (block === undefined) {
+    res.status(400).send('block not found');
+  } else {
+    res.send(block);
+  }
+});
+
 app
   .route('/transactions')
   .get((req: Request, res: Response) => {
@@ -58,6 +71,21 @@ app
     //res.status(400).send(err.message);
     //}
   });
+
+app.get('/transactions/:id', (req: Request, res: Response) => {
+  const {
+    params: { id }
+  } = req;
+  const tx = getBlockchain()
+    .map((block: Block): Transaction[] => block.data)
+    .flat()
+    .find((tx: Transaction): boolean => tx.id === id);
+  if (tx === undefined) {
+    res.status(400).send('tx not found');
+  } else {
+    res.send(tx);
+  }
+});
 
 const server = app.listen(PORT, () => console.log(`Nomadcoin HTTP server running on ${PORT}`));
 
