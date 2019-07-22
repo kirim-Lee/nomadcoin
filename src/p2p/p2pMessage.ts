@@ -76,6 +76,7 @@ export const handleSocketMessages = (ws: WebSockets, data: any) => {
       receivedTxs.forEach((tx: Transaction) => {
         try {
           handleIncomingTx(tx);
+          broadcastMemPool();
         } catch (e) {
           console.log(e);
         }
