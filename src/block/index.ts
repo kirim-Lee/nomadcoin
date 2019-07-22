@@ -7,6 +7,7 @@ import { getPublicFromWallet, getPrivateFromWallet } from '../wallet';
 import { Transaction, getUTxOut, UTxOut, setUTxOut } from '../tx/txBasis';
 import { addToMemPool, updateMemPool } from '../memPool';
 import { getMemPool } from '../memPool/memPoolBasis';
+import { broadcastMemPool } from '../p2p/p2pMessage';
 
 export const createNewBlock = () => {
   const coinbaseTx = createCoinbaseTx(getPublicFromWallet(), getNewestBlock().index + 1);
@@ -67,5 +68,6 @@ export const addBlockToChain = (candidateBlock: Block): boolean => {
 export const sendTx = (address: string, amount: number) => {
   const tx = createTx(address, amount, getPrivateFromWallet(), getUTxOut(), getMemPool());
   addToMemPool(tx, getUTxOut());
+  broadcastMemPool();
   return tx;
 };
