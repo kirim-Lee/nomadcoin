@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import { getBlockchain } from './block/blockBasis';
 import { startP2PServer, connectToPeers } from './p2p';
 import { createNewBlockWithBroadCast } from './p2p/p2pMessage';
-import { initWallet, getAccountBalance } from './wallet';
+import { initWallet, getAccountBalance, getPublicFromWallet } from './wallet';
 import { sendTx } from './block';
 import { getMemPool } from './memPool/memPoolBasis';
 
@@ -36,10 +36,14 @@ app.get('/me/balance', (req: Request, res: Response) => {
   res.send({ balance });
 });
 
+app.get('/me/address', (req: Request, res: Response) => {
+  res.send(getPublicFromWallet());
+});
+
 app
   .route('/transactions')
   .get((req: Request, res: Response) => {
-    res.send(getMemPool())
+    res.send(getMemPool());
   })
   .post((req: Request, res: Response) => {
     //try {
