@@ -1,7 +1,7 @@
 import WebSockets from 'ws';
 import { Server } from 'http';
-import { addToSocket, removeFromSocket } from './p2pBasis';
-import { getLatest, handleSocketMessages, sendMessage, getAllMemPool } from './p2pMessage';
+import { addToSocket, removeFromSocket, getSockets } from './p2pBasis';
+import { getLatest, handleSocketMessages, sendMessage, getAllMemPool, sendMessageToAll } from './p2pMessage';
 
 const startP2PServer = (server: Server) => {
   const wsServer = new WebSockets.Server({ server });
@@ -20,8 +20,13 @@ const initSocketConnection = (ws: WebSockets): void => {
   ws.on('message', data => handleSocketMessages(ws, data));
   sendMessage(ws, getLatest());
   setTimeout(() => {
-    sendMessage(ws, getAllMemPool());
+    sendMessageToAll(getAllMemPool());
   }, 1000);
+  setInterval(() => {
+    if (getSockets().includes(ws)) {
+      sendMessage(ws, getLatest());
+    }
+  }, 1000 * 10);
 };
 
 const closeSockeConnection = (ws: WebSockets): void => {

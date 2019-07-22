@@ -32,7 +32,8 @@ const parseData = (data: any): any => {
 
 export const sendMessage = (ws: WebSockets, message: IMessage): void => ws.send(JSON.stringify(message));
 
-const sendMessageToAll = (message: IMessage): void => getSockets().forEach((ws): void => sendMessage(ws, message));
+export const sendMessageToAll = (message: IMessage): void =>
+  getSockets().forEach((ws): void => sendMessage(ws, message));
 
 export const broadcastNewBlock = () => sendMessageToAll(responseLatest());
 
