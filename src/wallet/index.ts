@@ -23,7 +23,7 @@ export const getPublicFromWallet = (): string => {
   return getPublicFromKey(privateKey);
 };
 
-const getBalance = (address: string, uTxOuts: UTxOut[]) => {
+export const getBalance = (address: string, uTxOuts: UTxOut[]) => {
   return uTxOuts
     .filter(uTxOut => uTxOut.address === address)
     .map(uTxOut => uTxOut.amount || 0)

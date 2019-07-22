@@ -5,10 +5,10 @@ import morgan from 'morgan';
 import Block, { getBlockchain } from './block/blockBasis';
 import { startP2PServer, connectToPeers } from './p2p';
 import { createNewBlockWithBroadCast } from './p2p/p2pMessage';
-import { initWallet, getAccountBalance, getPublicFromWallet } from './wallet';
+import { initWallet, getAccountBalance, getPublicFromWallet, getBalance } from './wallet';
 import { sendTx } from './block';
 import { getMemPool } from './memPool/memPoolBasis';
-import { Transaction } from './tx/txBasis';
+import { Transaction, getUTxOut } from './tx/txBasis';
 
 const PORT = process.env.HTTP_PORT || 3300;
 
@@ -85,6 +85,14 @@ app.get('/transactions/:id', (req: Request, res: Response) => {
   } else {
     res.send(tx);
   }
+});
+
+app.get('/balance/:address', (req: Request, res: Response) => {
+  const {
+    params: { address }
+  } = req;
+  const balance = getBalance(address, getUTxOut());
+  res.send({ balance });
 });
 
 const server = app.listen(PORT, () => console.log(`Nomadcoin HTTP server running on ${PORT}`));
