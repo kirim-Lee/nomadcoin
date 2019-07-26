@@ -2,6 +2,7 @@ import './utils/extensions'; // Array.prototype extension
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
+import cors from 'cors';
 import Block, { getBlockchain } from './block/blockBasis';
 import { startP2PServer, connectToPeers } from './p2p';
 import { createNewBlockWithBroadCast } from './p2p/p2pMessage';
@@ -14,6 +15,7 @@ const PORT = process.env.HTTP_PORT || 3300;
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 app.use(morgan('combined'));
 
 app
