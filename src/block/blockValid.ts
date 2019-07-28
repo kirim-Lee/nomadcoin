@@ -9,7 +9,7 @@ const isBlockStructureValid = (block: Block): boolean =>
   Test([
     [typeof block.index !== 'number', 'block index type invalid'],
     [typeof block.hash !== 'string', 'block hash type invalid'],
-    [typeof block.previousHash !== 'string', 'block previous hash invalid'],
+    // [typeof block.previousHash !== 'string', 'block previous hash invalid'],
     [typeof block.timestamp !== 'number', 'block timestamp type invalid'],
     [typeof block.data !== 'object', 'block data type invalid']
   ]);
