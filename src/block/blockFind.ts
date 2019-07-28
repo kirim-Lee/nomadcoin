@@ -25,7 +25,7 @@ const calculateNewDifficulty = (newestBlock: Block, blockchain: Block[]): number
   }
 };
 
-const hashMatchedDifficulty = (hash: string, difficulty: number): boolean => {
+const hashMatchedDifficulty = (hash: string, difficulty: number = 0): boolean => {
   const hashInBinary: string = hexToBinary(hash);
   const requiredZeros: string = '0'.repeat(difficulty);
   console.log('Try difficulty:' + difficulty, 'with hash:' + hashInBinary);
