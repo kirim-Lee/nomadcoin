@@ -97,7 +97,9 @@ app.get('/balance/:address', (req: Request, res: Response) => {
   res.send({ balance });
 });
 
-const server = app.listen(PORT, () => console.log(`Nomadcoin HTTP server running on ${PORT}`));
+// const server = app.listen(PORT, () => console.log(`Nomadcoin HTTP server running on ${PORT}`));
 
 initWallet();
-startP2PServer(server);
+
+export default { app, startP2PServer };
+// startP2PServer(server);
